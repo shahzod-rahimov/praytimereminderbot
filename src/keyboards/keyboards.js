@@ -43,4 +43,13 @@ const inlineTimes = {
   ],
 };
 
-module.exports = { inlineRegions, inlineTimes };
+const menu = {
+  keyboard: [['🕔 Namoz vaqtlari', '⚙️ Sozlamalar']],
+  resize_keyboard: true,
+};
+const settingsMenu = {
+  keyboard: [["🌏 Shaharni o'zgartirish"], ["🕔 Eslatma vaqtini o'zgartirish"]],
+  resize_keyboard: true,
+};
+
+module.exports = { inlineRegions, inlineTimes, menu, settingsMenu };

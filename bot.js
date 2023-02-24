@@ -7,8 +7,13 @@ const {
   changeRegion,
   toCapitalize,
   changeReminderTime,
+  sendPrayTimes,
 } = require('./src/helpers/helpers.js');
-const { inlineRegions, inlineTimes } = require('./src/keyboards/keyboards.js');
+const {
+  inlineRegions,
+  inlineTimes,
+  settingsMenu,
+} = require('./src/keyboards/keyboards.js');
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -26,11 +31,14 @@ bot.on('text', async (msg) => {
   const text = msg.text;
   const chat_id = msg.from.id;
   const user = await checkUser(msg);
-  const steep = user?.steep || [];
+  const steep = user.step;
+  const last_step = steep[steep.length - 1];
 
-  if (text == '/start') {
+  if (text == '/start' && user.region) {
+    sendPrayTimes(bot, msg, user);
+  } else if (text == '/start') {
     changStep(user, 'home');
-    
+
     await bot.sendMessage(
       chat_id,
       '*👋 Assalomu alaykum namoz vaqtlarini eslatuvchi botga hush kelibsiz\\.*\n\n_Iltimos yashash hududingzni tanlang\\!_',
@@ -39,6 +47,8 @@ bot.on('text', async (msg) => {
         reply_markup: inlineRegions,
       },
     );
+  } else if (text == '⚙️ Sozlamalar') {
+    bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
   }
 });
 
@@ -68,7 +78,8 @@ bot.on('callback_query', async (msg) => {
   } else if (data.split('-')[0] == 'before') {
     changeReminderTime(user, data.split('-')[1]);
 
-    bot.deleteMessage(chat_id, msgId)
-    bot.sendMessage(chat_id, 'Bizning botdan foydalanayotganingiz uchun rahmat!')
+    bot.deleteMessage(chat_id, msgId);
+
+    sendPrayTimes(bot, msg, user);
   }
 });
