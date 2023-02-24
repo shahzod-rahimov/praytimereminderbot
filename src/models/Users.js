@@ -6,6 +6,7 @@ const usersShema = new Schema(
     name: { type: String },
     region: { type: String },
     step: { type: Array },
+    remind_time: {type: Number},
     is_admin: { type: Boolean, default: false },
   },
   { versionKey: false, timestamps: true },
