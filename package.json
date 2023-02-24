@@ -1,0 +1,20 @@
+{
+  "name": "pray-time-reminderbot",
+  "version": "1.0.0",
+  "description": "This bot remind people pray time.",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
+  },
+  "author": "Shahzod Rahimov",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "mongoose": "^6.10.0",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
