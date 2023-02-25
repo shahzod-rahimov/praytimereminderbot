@@ -66,7 +66,7 @@ async function changeReminderTime(user, time) {
 async function sendPrayTimes(bot, msg, user) {
   try {
     const chat_id = msg.from.id;
-    const res = await axios.get(api + 'Toshkent');
+    const res = await axios.get(api + user.region);
     const data = res.data;
     bot.sendMessage(chat_id, makeText(data), {
       reply_markup: menu,
@@ -117,6 +117,80 @@ function toCapitalize(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
 
+async function sendPrayTimeOnTime(bot) {
+  const users = await Users.find({});
+  const date = new Date();
+
+  users.forEach(async (user) => {
+    const res = await axios.get(api + user.region);
+    const data = res.data;
+    const prayTimes = res.data.times;
+    const bomdod = new Date(`${data.date}/${prayTimes.tong_saharlik}`);
+    const quyosh = new Date(`${data.date}/${prayTimes.quyosh}`);
+    const peshin = new Date(`${data.date}/${prayTimes.peshin}`);
+    const asr = new Date(`${data.date}/${prayTimes.asr}`);
+    const shom = new Date(`${data.date}/${prayTimes.shom}`);
+    const hufton = new Date(`${data.date}/${prayTimes.hufton}`);
+
+
+    if (
+      bomdod.getHours() == date.getHours() &&
+      bomdod.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(
+        user.user_id,
+        `<b>🌆 Bomdod ${prayTimes.tong_saharlik} da kirdi</b>`,
+        { parse_mode: 'Html' },
+      );
+    } else if (
+      quyosh.getHours() == date.getHours() &&
+      quyosh.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(
+        user.user_id,
+        `<b>🌅 Bomdod ${prayTimes.quyosh} da chiqdi</b>`,
+        { parse_mode: 'Html' },
+      );
+    } else if (
+      peshin.getHours() == date.getHours() &&
+      peshin.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(
+        user.user_id,
+        `<b>🏙 Peshin ${prayTimes.peshin} da kirdi</b>`,
+        { parse_mode: 'Html' },
+      );
+    } else if (
+      asr.getHours() == date.getHours() &&
+      asr.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(user.user_id, `<b>🌁 Asr ${prayTimes.asr} da kirdi</b>`, {
+        parse_mode: 'Html',
+      });
+    } else if (
+      shom.getHours() == date.getHours() &&
+      shom.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(
+        user.user_id,
+        `<b>🌄 Shom ${prayTimes.shom_iftor} da kirdi</b>`,
+        { parse_mode: 'Html' },
+      );
+    } else if (
+      hufton.getHours() == date.getHours() &&
+      hufton.getMinutes() == date.getMinutes()
+    ) {
+      bot.sendMessage(
+        user.user_id,
+        `<b>🌃 Hufton ${prayTimes.hufton} da kirdi</b>`,
+        {
+          parse_mode: 'Html',
+        },
+      );
+    }
+  });
+}
+
 module.exports = {
   changStep,
   clearStep,
@@ -125,4 +199,5 @@ module.exports = {
   toCapitalize,
   changeReminderTime,
   sendPrayTimes,
+  sendPrayTimeOnTime,
 };

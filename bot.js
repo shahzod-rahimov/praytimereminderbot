@@ -8,6 +8,7 @@ const {
   toCapitalize,
   changeReminderTime,
   sendPrayTimes,
+  sendPrayTimeOnTime,
 } = require('./src/helpers/helpers.js');
 const {
   inlineRegions,
@@ -28,6 +29,10 @@ async function mongoConnect() {
   }
 }
 mongoConnect();
+
+setInterval(() => {
+  sendPrayTimeOnTime(bot);
+}, 60000);
 
 bot.on('text', async (msg) => {
   const text = msg.text;
