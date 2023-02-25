@@ -17,6 +17,7 @@ const {
   menu,
   inlineTimesWithoutBack,
 } = require('./src/keyboards/keyboards.js');
+const Users = require('./src/models/Users.js');
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -35,93 +36,105 @@ setInterval(() => {
 }, 60000);
 
 bot.on('text', async (msg) => {
-  const text = msg.text;
-  const chat_id = msg.from.id;
-  const user = await checkUser(msg);
-  const steps = user.step;
-  const last_step = steps[steps.length - 1];
+  try {
+    const text = msg.text;
+    const chat_id = msg.from.id;
+    const user = await checkUser(msg);
+    const steps = user.step;
+    const last_step = steps[steps.length - 1];
 
-  if (text == '/start' && user.region) {
-    sendPrayTimes(bot, msg, user);
-  } else if (text == '/start') {
-    changStep(user, 'home');
+    if (text == '/start' && user.region) {
+      sendPrayTimes(bot, msg, user);
+    } else if (text == '/start') {
+      changStep(user, 'home');
 
-    await bot.sendMessage(
-      chat_id,
-      '*👋 Assalomu alaykum namoz vaqtlarini eslatuvchi botga hush kelibsiz\\.*\n\n_Iltimos yashash hududingzni tanlang\\!_',
-      {
-        parse_mode: 'MarkdownV2',
+      await bot.sendMessage(
+        chat_id,
+        '*👋 Assalomu alaykum namoz vaqtlarini eslatuvchi botga hush kelibsiz\\.*\n\n_Iltimos yashash hududingzni tanlang\\!_',
+        {
+          parse_mode: 'MarkdownV2',
+          reply_markup: inlineRegions,
+        },
+      );
+    } else if (text == '⚙️ Sozlamalar') {
+      changStep(user, 'setting');
+      bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
+    } else if (text == "🌏 Shaharni o'zgartirish") {
+      bot.sendMessage(chat_id, 'Hududingizni tanlang!', {
         reply_markup: inlineRegions,
-      },
-    );
-  } else if (text == '⚙️ Sozlamalar') {
-    changStep(user, 'setting');
-    bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
-  } else if (text == "🌏 Shaharni o'zgartirish") {
-    bot.sendMessage(chat_id, 'Hududingizni tanlang!', {
-      reply_markup: inlineRegions,
-    });
-  } else if (text == "🕔 Eslatma vaqtini o'zgartirish") {
-    bot.sendMessage(chat_id, "Eslatma vaqtini o'zgartirish", {
-      reply_markup: inlineTimesWithoutBack,
-    });
-  } else if (text == '⬅️ Ortga' && last_step == 'setting') {
-    changStep(user, 'home');
-    bot.sendMessage(chat_id, 'Assosiy menyu', { reply_markup: menu });
-  } else if (text == '🕔 Namoz vaqtlari') {
-    sendPrayTimes(bot, msg, user);
+      });
+    } else if (text == "🕔 Eslatma vaqtini o'zgartirish") {
+      bot.sendMessage(chat_id, "Eslatma vaqtini o'zgartirish", {
+        reply_markup: inlineTimesWithoutBack,
+      });
+    } else if (text == '⬅️ Ortga' && last_step == 'setting') {
+      changStep(user, 'home');
+      bot.sendMessage(chat_id, 'Assosiy menyu', { reply_markup: menu });
+    } else if (text == '🕔 Namoz vaqtlari') {
+      sendPrayTimes(bot, msg, user);
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
 bot.on('callback_query', async (msg) => {
-  const data = msg.data;
-  const chat_id = msg.from.id;
-  const msgId = msg?.message?.message_id;
-  const user = await checkUser(msg);
-  const steps = user.step;
-  const last_step = steps[steps.length - 1];
+  try {
+    const data = msg.data;
+    const chat_id = msg.from.id;
+    const msgId = msg?.message?.message_id;
+    const user = await checkUser(msg);
+    const steps = user.step;
+    const last_step = steps[steps.length - 1];
 
-  if (data == 'back') {
-    bot.editMessageText('Iltimos yashash hududingzni tanlang', {
-      chat_id,
-      message_id: msgId,
-      reply_markup: inlineRegions,
-    });
-  } else if (data.split('-')[0] == 'region' && last_step == 'setting') {
-    changStep(user, 'home');
-
-    changeRegion(user, toCapitalize(data.split('-')[1]));
-
-    bot.deleteMessage(chat_id, msgId);
-    bot.sendMessage(chat_id, "✅ Shahar muvaffaqiyatli o'zgartirildi!", {
-      reply_markup: menu,
-    });
-  } else if (data.split('-')[0] == 'before' && last_step == 'setting') {
-    changeReminderTime(user, data.split('-')[1]);
-
-    bot.deleteMessage(chat_id, msgId);
-
-    bot.sendMessage(chat_id, "✅ Eslatma vaqti muvaffaqiyatli o'zgartirildi!", {
-      reply_markup: menu,
-    });
-  } else if (data.split('-')[0] == 'region') {
-    changStep(user, 'home');
-
-    changeRegion(user, toCapitalize(data.split('-')[1]));
-
-    bot.editMessageText(
-      'Namoz vaqlarini nechi daqiqa oldin eslatishimizni istaysiz?',
-      {
+    if (data == 'back') {
+      bot.editMessageText('Iltimos yashash hududingzni tanlang', {
         chat_id,
         message_id: msgId,
-        reply_markup: inlineTimes,
-      },
-    );
-  } else if (data.split('-')[0] == 'before') {
-    changeReminderTime(user, data.split('-')[1]);
+        reply_markup: inlineRegions,
+      });
+    } else if (data.split('-')[0] == 'region' && last_step == 'setting') {
+      changStep(user, 'home');
 
-    bot.deleteMessage(chat_id, msgId);
+      changeRegion(user, toCapitalize(data.split('-')[1]));
 
-    sendPrayTimes(bot, msg, user);
+      bot.deleteMessage(chat_id, msgId);
+      bot.sendMessage(chat_id, "✅ Shahar muvaffaqiyatli o'zgartirildi!", {
+        reply_markup: menu,
+      });
+    } else if (data.split('-')[0] == 'before' && last_step == 'setting') {
+      changeReminderTime(user, data.split('-')[1]);
+
+      bot.deleteMessage(chat_id, msgId);
+
+      bot.sendMessage(
+        chat_id,
+        "✅ Eslatma vaqti muvaffaqiyatli o'zgartirildi!",
+        {
+          reply_markup: menu,
+        },
+      );
+    } else if (data.split('-')[0] == 'region') {
+      changStep(user, 'home');
+
+      changeRegion(user, toCapitalize(data.split('-')[1]));
+
+      bot.editMessageText(
+        'Namoz vaqlarini nechi daqiqa oldin eslatishimizni istaysiz?',
+        {
+          chat_id,
+          message_id: msgId,
+          reply_markup: inlineTimes,
+        },
+      );
+    } else if (data.split('-')[0] == 'before') {
+      changeReminderTime(user, data.split('-')[1]);
+
+      bot.deleteMessage(chat_id, msgId);
+
+      sendPrayTimes(bot, msg, user);
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
