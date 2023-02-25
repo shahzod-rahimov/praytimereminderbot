@@ -10,7 +10,9 @@ async function changStep(user, step_name) {
     let steps = user.step;
     const lastStep = user.step[user.step.length - 1];
 
-    if (lastStep != step_name) steps.push(step_name);
+    if (step_name == 'home') {
+      steps = ['home'];
+    } else if (lastStep != step_name) steps.push(step_name);
     else return;
 
     const updatedUser = await Users.findOneAndUpdate(
@@ -18,8 +20,6 @@ async function changStep(user, step_name) {
       { step: steps },
       { new: true },
     );
-
-    // console.log('changStep', updatedUser);
   } catch (error) {
     console.log(error);
   }
@@ -68,7 +68,6 @@ async function sendPrayTimes(bot, msg, user) {
     const chat_id = msg.from.id;
     const res = await axios.get(api + 'Toshkent');
     const data = res.data;
-    console.log(data);
     bot.sendMessage(chat_id, makeText(data), {
       reply_markup: menu,
       parse_mode: 'Html',

@@ -13,6 +13,8 @@ const {
   inlineRegions,
   inlineTimes,
   settingsMenu,
+  menu,
+  inlineTimesWithoutBack,
 } = require('./src/keyboards/keyboards.js');
 
 const TOKEN = process.env.BOT_TOKEN;
@@ -31,8 +33,8 @@ bot.on('text', async (msg) => {
   const text = msg.text;
   const chat_id = msg.from.id;
   const user = await checkUser(msg);
-  const steep = user.step;
-  const last_step = steep[steep.length - 1];
+  const steps = user.step;
+  const last_step = steps[steps.length - 1];
 
   if (text == '/start' && user.region) {
     sendPrayTimes(bot, msg, user);
@@ -48,7 +50,21 @@ bot.on('text', async (msg) => {
       },
     );
   } else if (text == '⚙️ Sozlamalar') {
+    changStep(user, 'setting');
     bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
+  } else if (text == "🌏 Shaharni o'zgartirish") {
+    bot.sendMessage(chat_id, 'Hududingizni tanlang!', {
+      reply_markup: inlineRegions,
+    });
+  } else if (text == "🕔 Eslatma vaqtini o'zgartirish") {
+    bot.sendMessage(chat_id, "Eslatma vaqtini o'zgartirish", {
+      reply_markup: inlineTimesWithoutBack,
+    });
+  } else if (text == '⬅️ Ortga' && last_step == 'setting') {
+    changStep(user, 'home');
+    bot.sendMessage(chat_id, 'Assosiy menyu', { reply_markup: menu });
+  } else if (text == '🕔 Namoz vaqtlari') {
+    sendPrayTimes(bot, msg, user);
   }
 });
 
@@ -57,6 +73,8 @@ bot.on('callback_query', async (msg) => {
   const chat_id = msg.from.id;
   const msgId = msg?.message?.message_id;
   const user = await checkUser(msg);
+  const steps = user.step;
+  const last_step = steps[steps.length - 1];
 
   if (data == 'back') {
     bot.editMessageText('Iltimos yashash hududingzni tanlang', {
@@ -64,7 +82,26 @@ bot.on('callback_query', async (msg) => {
       message_id: msgId,
       reply_markup: inlineRegions,
     });
+  } else if (data.split('-')[0] == 'region' && last_step == 'setting') {
+    changStep(user, 'home');
+
+    changeRegion(user, toCapitalize(data.split('-')[1]));
+
+    bot.deleteMessage(chat_id, msgId);
+    bot.sendMessage(chat_id, "✅ Shahar muvaffaqiyatli o'zgartirildi!", {
+      reply_markup: menu,
+    });
+  } else if (data.split('-')[0] == 'before' && last_step == 'setting') {
+    changeReminderTime(user, data.split('-')[1]);
+
+    bot.deleteMessage(chat_id, msgId);
+
+    bot.sendMessage(chat_id, "✅ Eslatma vaqti muvaffaqiyatli o'zgartirildi!", {
+      reply_markup: menu,
+    });
   } else if (data.split('-')[0] == 'region') {
+    changStep(user, 'home');
+
     changeRegion(user, toCapitalize(data.split('-')[1]));
 
     bot.editMessageText(

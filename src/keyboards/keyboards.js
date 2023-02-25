@@ -43,13 +43,39 @@ const inlineTimes = {
   ],
 };
 
+const inlineTimesWithoutBack = {
+  inline_keyboard: [
+    [{ text: "O'z vaqtida", callback_data: 'before-0' }],
+    [
+      { text: '5 daqiqa', callback_data: 'before-5' },
+      { text: '10 daqiqa', callback_data: 'before-10' },
+    ],
+    [
+      { text: '15 daqiqa', callback_data: 'before-15' },
+      { text: '20 daqiqa', callback_data: 'before-20' },
+    ],
+  ],
+};
+
 const menu = {
   keyboard: [['🕔 Namoz vaqtlari', '⚙️ Sozlamalar']],
   resize_keyboard: true,
 };
+
 const settingsMenu = {
-  keyboard: [["🌏 Shaharni o'zgartirish"], ["🕔 Eslatma vaqtini o'zgartirish"]],
+  keyboard: [
+    ["🌏 Shaharni o'zgartirish"],
+    ["🕔 Eslatma vaqtini o'zgartirish"],
+    ['⬅️ Ortga'],
+  ],
   resize_keyboard: true,
+  one_time_keyboard: true,
 };
 
-module.exports = { inlineRegions, inlineTimes, menu, settingsMenu };
+module.exports = {
+  inlineRegions,
+  inlineTimes,
+  menu,
+  settingsMenu,
+  inlineTimesWithoutBack,
+};
