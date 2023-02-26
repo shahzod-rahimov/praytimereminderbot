@@ -9,6 +9,7 @@ const {
   changeReminderTime,
   sendPrayTimes,
   sendPrayTimeOnTime,
+  getUser,
 } = require('./src/helpers/helpers.js');
 const {
   inlineRegions,
@@ -16,6 +17,7 @@ const {
   settingsMenu,
   menu,
   inlineTimesWithoutBack,
+  inlineRegionsSettings,
 } = require('./src/keyboards/keyboards.js');
 const Users = require('./src/models/Users.js');
 
@@ -61,7 +63,7 @@ bot.on('text', async (msg) => {
       bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
     } else if (text == "🌏 Shaharni o'zgartirish") {
       bot.sendMessage(chat_id, 'Hududingizni tanlang!', {
-        reply_markup: inlineRegions,
+        reply_markup: inlineRegionsSettings,
       });
     } else if (text == "🕔 Eslatma vaqtini o'zgartirish") {
       bot.sendMessage(chat_id, "Eslatma vaqtini o'zgartirish", {
@@ -72,6 +74,8 @@ bot.on('text', async (msg) => {
       bot.sendMessage(chat_id, 'Assosiy menyu', { reply_markup: menu });
     } else if (text == '🕔 Namoz vaqtlari') {
       sendPrayTimes(bot, msg, user);
+    } else if (text == '👤 Profilim') {
+      getUser(chat_id, bot);
     }
   } catch (error) {
     console.log(error);
@@ -133,6 +137,8 @@ bot.on('callback_query', async (msg) => {
       bot.deleteMessage(chat_id, msgId);
 
       sendPrayTimes(bot, msg, user);
+    } else if (data == 'cancel') {
+      bot.deleteMessage(chat_id, msgId);
     }
   } catch (error) {
     console.log(error);

@@ -30,12 +30,17 @@ async function clearStep() {}
 async function checkUser(data) {
   try {
     const chat_id = data.from.id;
+    const name = data.from.first_name;
     const user = await Users.findOne({ user_id: chat_id });
 
     if (user) {
       return user;
     } else {
-      let user = await Users.create({ user_id: chat_id, step: 'home' });
+      let user = await Users.create({
+        user_id: chat_id,
+        step: 'home',
+        name,
+      });
 
       return user;
     }
@@ -133,7 +138,7 @@ async function sendPrayTimeOnTime(bot) {
         const asr = new Date(`${data.date}/${prayTimes.asr}`);
         const shom = new Date(`${data.date}/${prayTimes.shom}`);
         const hufton = new Date(`${data.date}/${prayTimes.hufton}`);
-
+        console.log(prayTimes);
         if (
           bomdod.getHours() == date.getHours() &&
           bomdod.getMinutes() == date.getMinutes()
@@ -200,6 +205,15 @@ async function sendPrayTimeOnTime(bot) {
   }
 }
 
+async function getUser(user_id, bot) {
+  const user = await Users.findOne({ user_id });
+
+  bot.sendMessage(
+    user_id,
+    `👤 Ismi: ${user.name}\n\n🌏 Shahar: ${user.region}\n\n🕔 Eslatma vaqti: ${user.remind_time} daqiqa oldin.`,
+  );
+}
+
 module.exports = {
   changStep,
   clearStep,
@@ -209,4 +223,5 @@ module.exports = {
   changeReminderTime,
   sendPrayTimes,
   sendPrayTimeOnTime,
+  getUser,
 };
