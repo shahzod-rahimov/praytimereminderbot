@@ -143,8 +143,9 @@ async function sendPrayTimeOnTime(bot) {
         const quyosh = new Date(`${data.date}/${prayTimes.quyosh}`);
         const peshin = new Date(`${data.date}/${prayTimes.peshin}`);
         const asr = new Date(`${data.date}/${prayTimes.asr}`);
-        const shom = new Date(`${data.date}/${prayTimes.shom}`);
+        const shom = new Date(`${data.date}/${prayTimes.shom_iftor}`);
         const hufton = new Date(`${data.date}/${prayTimes.hufton}`);
+
         if (
           bomdod.getHours() == date.getHours() &&
           bomdod.getMinutes() == date.getMinutes()
@@ -164,7 +165,6 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌅 Bomdod ${prayTimes.quyosh} da chiqdi</b>`,
             { parse_mode: 'Html' },
           );
-          console.log('quyosh', date.toTimeString());
         } else if (
           peshin.getHours() == date.getHours() &&
           peshin.getMinutes() == date.getMinutes()
@@ -174,7 +174,6 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🏙 Peshin ${prayTimes.peshin} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
-          console.log('peshin', date.toTimeString());
         } else if (
           asr.getHours() == date.getHours() &&
           asr.getMinutes() == date.getMinutes()
@@ -186,7 +185,6 @@ async function sendPrayTimeOnTime(bot) {
               parse_mode: 'Html',
             },
           );
-          console.log('asr', date.toTimeString());
         } else if (
           shom.getHours() == date.getHours() &&
           shom.getMinutes() == date.getMinutes()
@@ -196,7 +194,6 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌄 Shom ${prayTimes.shom_iftor} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
-          console.log('shom', date.toTimeString());
         } else if (
           hufton.getHours() == date.getHours() &&
           hufton.getMinutes() == date.getMinutes()
@@ -208,7 +205,6 @@ async function sendPrayTimeOnTime(bot) {
               parse_mode: 'Html',
             },
           );
-          console.log('hufton', date.toTimeString());
         }
       }
     });

@@ -35,7 +35,7 @@ mongoConnect();
 
 setInterval(() => {
   sendPrayTimeOnTime(bot);
-}, 60000);
+}, 5000);
 
 bot.on('text', async (msg) => {
   try {
