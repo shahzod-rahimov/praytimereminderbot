@@ -71,12 +71,19 @@ async function changeReminderTime(user, time) {
 async function sendPrayTimes(bot, msg, user) {
   try {
     const chat_id = msg.from.id;
-    const res = await axios.get(api + user.region);
-    const data = res.data;
-    bot.sendMessage(chat_id, makeText(data), {
-      reply_markup: menu,
-      parse_mode: 'Html',
-    });
+
+    if (user.region) {
+      const res = await axios.get(api + user.region);
+      const data = res.data;
+      bot.sendMessage(chat_id, makeText(data), {
+        reply_markup: menu,
+        parse_mode: 'Html',
+      });
+    } else {
+      bot.sendMessage(chat_id, 'Iltimos avval shahringizni kiriting!', {
+        reply_markup: inlineRegionsSettings,
+      });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -138,7 +145,6 @@ async function sendPrayTimeOnTime(bot) {
         const asr = new Date(`${data.date}/${prayTimes.asr}`);
         const shom = new Date(`${data.date}/${prayTimes.shom}`);
         const hufton = new Date(`${data.date}/${prayTimes.hufton}`);
-        console.log(prayTimes);
         if (
           bomdod.getHours() == date.getHours() &&
           bomdod.getMinutes() == date.getMinutes()
@@ -148,6 +154,7 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌆 Bomdod ${prayTimes.tong_saharlik} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
+          console.log('bomdod', date.toTimeString());
         } else if (
           quyosh.getHours() == date.getHours() &&
           quyosh.getMinutes() == date.getMinutes()
@@ -157,6 +164,7 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌅 Bomdod ${prayTimes.quyosh} da chiqdi</b>`,
             { parse_mode: 'Html' },
           );
+          console.log('quyosh', date.toTimeString());
         } else if (
           peshin.getHours() == date.getHours() &&
           peshin.getMinutes() == date.getMinutes()
@@ -166,6 +174,7 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🏙 Peshin ${prayTimes.peshin} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
+          console.log('peshin', date.toTimeString());
         } else if (
           asr.getHours() == date.getHours() &&
           asr.getMinutes() == date.getMinutes()
@@ -177,6 +186,7 @@ async function sendPrayTimeOnTime(bot) {
               parse_mode: 'Html',
             },
           );
+          console.log('asr', date.toTimeString());
         } else if (
           shom.getHours() == date.getHours() &&
           shom.getMinutes() == date.getMinutes()
@@ -186,6 +196,7 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌄 Shom ${prayTimes.shom_iftor} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
+          console.log('shom', date.toTimeString());
         } else if (
           hufton.getHours() == date.getHours() &&
           hufton.getMinutes() == date.getMinutes()
@@ -197,6 +208,7 @@ async function sendPrayTimeOnTime(bot) {
               parse_mode: 'Html',
             },
           );
+          console.log('hufton', date.toTimeString());
         }
       }
     });
