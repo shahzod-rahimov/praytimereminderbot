@@ -155,7 +155,6 @@ async function sendPrayTimeOnTime(bot) {
             `<b>🌆 Bomdod ${prayTimes.tong_saharlik} da kirdi</b>`,
             { parse_mode: 'Html' },
           );
-          console.log('bomdod', date.toTimeString());
         } else if (
           quyosh.getHours() == date.getHours() &&
           quyosh.getMinutes() == date.getMinutes()

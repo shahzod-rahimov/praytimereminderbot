@@ -19,7 +19,6 @@ const {
   inlineTimesWithoutBack,
   inlineRegionsSettings,
 } = require('./src/keyboards/keyboards.js');
-const Users = require('./src/models/Users.js');
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -139,6 +138,7 @@ bot.on('callback_query', async (msg) => {
       sendPrayTimes(bot, msg, user);
     } else if (data == 'cancel') {
       bot.deleteMessage(chat_id, msgId);
+      bot.sendMessage(chat_id, 'Bekor qilindi', { reply_markup: menu });
     }
   } catch (error) {
     console.log(error);
