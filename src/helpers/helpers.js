@@ -227,7 +227,7 @@ async function sendNotifBeforeFriday(bot) {
     const users = await Users.find({});
 
     users.forEach((user) => {
-      bot.sendMessage(user.user_id, notifTextOnFriday, {
+      bot.sendMessage(user.user_id, notifTextBeforeFriday, {
         parse_mode: 'Html',
         disable_web_page_preview: true,
       });
