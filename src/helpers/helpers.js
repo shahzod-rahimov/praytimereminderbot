@@ -221,7 +221,6 @@ async function getUser(user_id, bot) {
 
 module.exports = {
   changStep,
-  clearStep,
   checkUser,
   changeRegion,
   toCapitalize,
