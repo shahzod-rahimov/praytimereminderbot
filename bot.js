@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { default: mongoose } = require('mongoose');
 const TelegramBot = require('node-telegram-bot-api');
+const schedule = require('node-schedule');
 const {
   changStep,
   checkUser,
@@ -10,6 +11,8 @@ const {
   sendPrayTimes,
   sendPrayTimeOnTime,
   getUser,
+  sendNotifBeforeFriday,
+  sendNotifOnFriday,
 } = require('./src/helpers/helpers.js');
 const {
   inlineRegions,
@@ -19,6 +22,8 @@ const {
   inlineTimesWithoutBack,
   inlineRegionsSettings,
 } = require('./src/keyboards/keyboards.js');
+const Users = require('./src/models/Users.js');
+const Regions = require('./src/models/Regions.js');
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -26,15 +31,29 @@ const bot = new TelegramBot(TOKEN, { polling: true });
 async function mongoConnect() {
   try {
     mongoose.connect(process.env.DB_URL);
+    // const users = await Users.find({}).select('region -_id').exec(function (err, users){
+    //   console.log(users);
+    // });
+    Regions.create({
+      region_name: "Toshkent"
+    })
   } catch (error) {
     console.log(error, 'DB ERROR');
   }
 }
 mongoConnect();
 
-setInterval(() => {
+schedule.scheduleJob('* * * * *', () => {
   sendPrayTimeOnTime(bot);
-}, 60000);
+});
+
+schedule.scheduleJob('0 6 * * 5', (bot) => {
+  sendNotifOnFriday(bot);
+});
+
+schedule.scheduleJob('0 18 * * 4', (bot) => {
+  sendNotifBeforeFriday(bot);
+});
 
 bot.on('text', async (msg) => {
   try {

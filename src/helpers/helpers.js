@@ -1,6 +1,7 @@
 const Users = require('../models/Users');
 const axios = require('axios');
 const { menu } = require('../keyboards/keyboards');
+const { notifTextBeforeFriday, notifTextOnFriday } = require('../lib');
 require('dotenv').config();
 
 const api = process.env.API_BASE_URL;
@@ -215,8 +216,43 @@ async function getUser(user_id, bot) {
 
   bot.sendMessage(
     user_id,
-    `👤 Ismi: ${user.name}\n\n🌏 Shahar: ${user.region}\n\n🕔 Eslatma vaqti: ${user.remind_time} daqiqa oldin.`,
+    `👤 Ismi: ${user.name}\n\n🌏 Shahar: ${user.region}\n\n🕔 Eslatma vaqti: ${
+      user.remind_time ? user.remind_time + ' daqiqa oldin' : "O'z vaqtida"
+    }.`,
   );
+}
+
+async function sendNotifBeforeFriday(bot) {
+  try {
+    const users = await Users.find({});
+
+    users.forEach((user) => {
+      bot.sendMessage(user.user_id, notifTextOnFriday, {
+        parse_mode: 'Html',
+        disable_web_page_preview: true,
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function sendNotifOnFriday(bot) {
+  try {
+    const users = await Users.find({});
+
+    users.forEach((user) => {
+      bot.sendPhoto(
+        user.user_id,
+        'https://i.pinimg.com/originals/dc/fc/f8/dcfcf80f8c85f5369e011a35a0ba37a5.jpg',
+        {
+          caption: notifTextOnFriday,
+          parse_mode: 'HTML',
+        },
+      );
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {
@@ -228,4 +264,6 @@ module.exports = {
   sendPrayTimes,
   sendPrayTimeOnTime,
   getUser,
+  sendNotifBeforeFriday,
+  sendNotifOnFriday,
 };
