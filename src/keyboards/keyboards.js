@@ -30,6 +30,7 @@ const inlineRegions = {
 
 const inlineTimes = {
   inline_keyboard: [
+    [{ text: "O'z vaqtida", callback_data: 'before-0' }],
     [
       { text: '5 daqiqa', callback_data: 'before-5' },
       { text: '10 daqiqa', callback_data: 'before-10' },
@@ -44,6 +45,7 @@ const inlineTimes = {
 
 const inlineTimesWithoutBack = {
   inline_keyboard: [
+    [{ text: "O'z vaqtida", callback_data: 'before-0' }],
     [
       { text: '5 daqiqa', callback_data: 'before-5' },
       { text: '10 daqiqa', callback_data: 'before-10' },

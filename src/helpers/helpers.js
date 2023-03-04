@@ -25,8 +25,6 @@ async function changStep(user, step_name) {
   }
 }
 
-async function clearStep() {}
-
 async function checkUser(data) {
   try {
     const chat_id = data.from.id;
