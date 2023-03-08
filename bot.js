@@ -1,7 +1,7 @@
-require('dotenv').config();
-const { default: mongoose } = require('mongoose');
-const TelegramBot = require('node-telegram-bot-api');
-const schedule = require('node-schedule');
+require("dotenv").config();
+const { default: mongoose } = require("mongoose");
+const TelegramBot = require("node-telegram-bot-api");
+const schedule = require("node-schedule");
 const {
   changStep,
   checkUser,
@@ -16,7 +16,7 @@ const {
   getRegions,
   updateRegionsPrayTime,
   sendPrayTimeOnRemindTime,
-} = require('./src/helpers');
+} = require("./src/helpers");
 const {
   inlineRegions,
   inlineTimes,
@@ -24,7 +24,7 @@ const {
   menu,
   inlineTimesWithoutBack,
   inlineRegionsSettings,
-} = require('./src/keyboards/keyboards.js');
+} = require("./src/keyboards/keyboards.js");
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -33,29 +33,30 @@ async function mongoConnect() {
   try {
     mongoose.connect(process.env.DB_URL);
   } catch (error) {
-    console.log(error, 'DB ERROR');
+    console.log(error, "DB ERROR");
   }
 }
 mongoConnect();
 
-schedule.scheduleJob('* * * * *', () => {
+schedule.scheduleJob("* * * * *", () => {
   sendPrayTimeOnTime(bot);
   sendPrayTimeOnRemindTime(bot);
 });
 
-schedule.scheduleJob('0 1 * * *', () => {
+schedule.scheduleJob("0 1 * * *", () => {
+  bot.sendMessage("1030692450", "updateRegionsTime(getRegions()) ishladi");
   updateRegionsPrayTime(getRegions());
 });
 
-schedule.scheduleJob('0 6 * * 5', (bot) => {
+schedule.scheduleJob("0 6 * * 5", () => {
   sendNotifOnFriday(bot);
 });
 
-schedule.scheduleJob('0 18 * * 4', (bot) => {
+schedule.scheduleJob("0 18 * * 4", () => {
   sendNotifBeforeFriday(bot);
 });
 
-bot.on('text', async (msg) => {
+bot.on("text", async (msg) => {
   try {
     const text = msg.text;
     const chat_id = msg.from.id;
@@ -63,36 +64,36 @@ bot.on('text', async (msg) => {
     const steps = user.step;
     const last_step = steps[steps.length - 1];
 
-    if (text == '/start' && user.region) {
+    if (text == "/start" && user.region) {
       sendPrayTimes(bot, msg, user);
-    } else if (text == '/start') {
-      changStep(user, 'home');
+    } else if (text == "/start") {
+      changStep(user, "home");
 
       await bot.sendMessage(
         chat_id,
-        '*👋 Assalomu alaykum namoz vaqtlarini eslatuvchi botga hush kelibsiz\\.*\n\n_Iltimos yashash hududingzni tanlang\\!_',
+        "*👋 Assalomu alaykum namoz vaqtlarini eslatuvchi botga hush kelibsiz\\.*\n\n_Iltimos yashash hududingzni tanlang\\!_",
         {
-          parse_mode: 'MarkdownV2',
+          parse_mode: "MarkdownV2",
           reply_markup: inlineRegions,
-        },
+        }
       );
-    } else if (text == '⚙️ Sozlamalar') {
-      changStep(user, 'setting');
-      bot.sendMessage(chat_id, 'Sozlamalar', { reply_markup: settingsMenu });
+    } else if (text == "⚙️ Sozlamalar") {
+      changStep(user, "setting");
+      bot.sendMessage(chat_id, "Sozlamalar", { reply_markup: settingsMenu });
     } else if (text == "🌏 Shaharni o'zgartirish") {
-      bot.sendMessage(chat_id, 'Hududingizni tanlang!', {
+      bot.sendMessage(chat_id, "Hududingizni tanlang!", {
         reply_markup: inlineRegionsSettings,
       });
     } else if (text == "🕔 Eslatma vaqtini o'zgartirish") {
       bot.sendMessage(chat_id, "Eslatma vaqtini o'zgartirish", {
         reply_markup: inlineTimesWithoutBack,
       });
-    } else if (text == '⬅️ Ortga' && last_step == 'setting') {
-      changStep(user, 'home');
-      bot.sendMessage(chat_id, 'Assosiy menyu', { reply_markup: menu });
-    } else if (text == '🕔 Namoz vaqtlari') {
+    } else if (text == "⬅️ Ortga" && last_step == "setting") {
+      changStep(user, "home");
+      bot.sendMessage(chat_id, "Assosiy menyu", { reply_markup: menu });
+    } else if (text == "🕔 Namoz vaqtlari") {
       sendPrayTimes(bot, msg, user);
-    } else if (text == '👤 Profilim') {
+    } else if (text == "👤 Profilim") {
       getUser(chat_id, bot);
     }
   } catch (error) {
@@ -100,7 +101,7 @@ bot.on('text', async (msg) => {
   }
 });
 
-bot.on('callback_query', async (msg) => {
+bot.on("callback_query", async (msg) => {
   try {
     const data = msg.data;
     const chat_id = msg.from.id;
@@ -109,23 +110,23 @@ bot.on('callback_query', async (msg) => {
     const steps = user.step;
     const last_step = steps[steps.length - 1];
 
-    if (data == 'back') {
-      bot.editMessageText('Iltimos yashash hududingzni tanlang', {
+    if (data == "back") {
+      bot.editMessageText("Iltimos yashash hududingzni tanlang", {
         chat_id,
         message_id: msgId,
         reply_markup: inlineRegions,
       });
-    } else if (data.split('-')[0] == 'region' && last_step == 'setting') {
-      changStep(user, 'home');
+    } else if (data.split("-")[0] == "region" && last_step == "setting") {
+      changStep(user, "home");
 
-      changeRegion(user, toCapitalize(data.split('-')[1]));
+      changeRegion(user, toCapitalize(data.split("-")[1]));
 
       bot.deleteMessage(chat_id, msgId);
       bot.sendMessage(chat_id, "✅ Shahar muvaffaqiyatli o'zgartirildi!", {
         reply_markup: menu,
       });
-    } else if (data.split('-')[0] == 'before' && last_step == 'setting') {
-      changeReminderTime(user, data.split('-')[1]);
+    } else if (data.split("-")[0] == "before" && last_step == "setting") {
+      changeReminderTime(user, data.split("-")[1]);
 
       bot.deleteMessage(chat_id, msgId);
 
@@ -134,30 +135,30 @@ bot.on('callback_query', async (msg) => {
         "✅ Eslatma vaqti muvaffaqiyatli o'zgartirildi!",
         {
           reply_markup: menu,
-        },
+        }
       );
-    } else if (data.split('-')[0] == 'region') {
-      changStep(user, 'home');
+    } else if (data.split("-")[0] == "region") {
+      changStep(user, "home");
 
-      changeRegion(user, toCapitalize(data.split('-')[1]));
+      changeRegion(user, toCapitalize(data.split("-")[1]));
 
       bot.editMessageText(
-        'Namoz vaqlarini nechi daqiqa oldin eslatishimizni istaysiz?',
+        "Namoz vaqlarini nechi daqiqa oldin eslatishimizni istaysiz?",
         {
           chat_id,
           message_id: msgId,
           reply_markup: inlineTimes,
-        },
+        }
       );
-    } else if (data.split('-')[0] == 'before') {
-      changeReminderTime(user, data.split('-')[1]);
+    } else if (data.split("-")[0] == "before") {
+      changeReminderTime(user, data.split("-")[1]);
 
       bot.deleteMessage(chat_id, msgId);
 
       sendPrayTimes(bot, msg, user);
-    } else if (data == 'cancel') {
+    } else if (data == "cancel") {
       bot.deleteMessage(chat_id, msgId);
-      bot.sendMessage(chat_id, 'Bekor qilindi', { reply_markup: menu });
+      bot.sendMessage(chat_id, "Bekor qilindi", { reply_markup: menu });
     }
   } catch (error) {
     console.log(error);
