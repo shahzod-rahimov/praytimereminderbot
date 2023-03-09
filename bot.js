@@ -38,13 +38,13 @@ async function mongoConnect() {
 }
 mongoConnect();
 
-schedule.scheduleJob("* * * * *", () => {
-  sendPrayTimeOnTime(bot);
-  sendPrayTimeOnRemindTime(bot);
+schedule.scheduleJob("0 4 * * *", () => {
+  console.log("At 4:00 a.m");
+  updateRegionsPrayTime(getRegions());
 });
 
 schedule.scheduleJob("0 1 * * *", () => {
-  bot.sendMessage("1030692450", "updateRegionsTime(getRegions()) ishladi");
+  console.log("At 1:00 a.m");
   updateRegionsPrayTime(getRegions());
 });
 
@@ -54,6 +54,11 @@ schedule.scheduleJob("0 6 * * 5", () => {
 
 schedule.scheduleJob("0 18 * * 4", () => {
   sendNotifBeforeFriday(bot);
+});
+
+schedule.scheduleJob("* * * * *", () => {
+  sendPrayTimeOnTime(bot);
+  sendPrayTimeOnRemindTime(bot);
 });
 
 bot.on("text", async (msg) => {

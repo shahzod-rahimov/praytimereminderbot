@@ -356,6 +356,7 @@ async function sendNotifOnFriday(bot) {
 
 async function getRegions() {
   try {
+    console.log(await Regions.find({}).select("region_name -_id"));
     return Regions.find({}).select("region_name -_id");
   } catch (error) {
     console.log(error);
@@ -369,6 +370,8 @@ async function updateRegionsPrayTime(arr) {
     regions.forEach(async (region) => {
       const res = await axios.get(`${api}${region.region_name}`);
       const prayTimes = res.data.times;
+
+      console.log(region.region_name, prayTimes);
 
       await Regions.updateOne({ region_name: region.region_name }, prayTimes);
     });
