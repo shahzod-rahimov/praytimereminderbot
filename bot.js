@@ -39,12 +39,6 @@ async function mongoConnect() {
 mongoConnect();
 
 schedule.scheduleJob("0 4 * * *", () => {
-  console.log("At 4:00 a.m");
-  updateRegionsPrayTime(getRegions());
-});
-
-schedule.scheduleJob("0 1 * * *", () => {
-  console.log("At 1:00 a.m");
   updateRegionsPrayTime(getRegions());
 });
 
