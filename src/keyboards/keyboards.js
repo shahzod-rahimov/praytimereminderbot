@@ -24,7 +24,7 @@ const inlineRegions = {
       { text: 'Samarqand', callback_data: 'region-samarqand' },
       { text: 'Toshkent', callback_data: 'region-toshkent' },
     ],
-    [{ text: 'Xiva', callback_data: 'region_xiva' }],
+    [{ text: 'Xiva', callback_data: 'region-xiva' }],
   ],
 };
 
@@ -84,7 +84,7 @@ const inlineRegionsSettings = {
       { text: 'Samarqand', callback_data: 'region-samarqand' },
       { text: 'Toshkent', callback_data: 'region-toshkent' },
     ],
-    [{ text: 'Xiva', callback_data: 'region_xiva' }],
+    [{ text: 'Xiva', callback_data: 'region-xiva' }],
     [{ text: 'Bekor qilish', callback_data: 'cancel' }],
   ],
 };
